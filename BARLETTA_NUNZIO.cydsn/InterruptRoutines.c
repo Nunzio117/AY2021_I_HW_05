@@ -1,21 +1,16 @@
 
-// Include header
+//Include required header files
 #include "InterruptRoutines.h"
 #include "define.h"
-//char message[50];
 
 CY_ISR(Custom_Button_ISR)
 {
-    i_rate+=1;
-    if(i_rate==0x07){
-        i_rate=0x01;
+    frequency_rate+=1; //Variabile descritta e definita in "InterruptRoutines.h"
+    if(frequency_rate>MAX_FREQUENCY_RATE){
+        frequency_rate=MIN_FREQUENCY_RATE; 
     }
-//    sprintf(message, "i_rate: 0x%02X\n",i_rate);
-//    UART_PutString(message);
     
-    
-   
-    flag=1;
+    flag=1; //Variabile definita in "InterruptRoutines.h"
 }
 
 

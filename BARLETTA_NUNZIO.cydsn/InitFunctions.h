@@ -3,8 +3,8 @@
     #define __INIT_FUNCTIONS_H
     
     void InitComponents(void);
-    void SetRegister1(void);
-    void SetRegister4(void);
+    void SetControlRegister1(void);
+    void SetControlRegister4(void);
     
 #endif
 

@@ -5,41 +5,32 @@
 #include "InitFunctions.h"  
 #include "ExecutiveFunctions.h"
 
-char message[50];
+//char message[50];
 
 int main(void)
 {   
-    CyGlobalIntEnable; /* Enable global interrupts. */
+    CyGlobalIntEnable; /*Enable global interrupts.*/
     
+    /*Inizializzazione componenti e settaggio flag=0; funzione definita in "InitFunctions.h"
+    ed esplicitata in "InitFunctions.c"*/
     InitComponents();
-//    EEPROM_Start();
-//    UART_Start();
-//    isr_Button_StartEx(Custom_Button_ISR);
-//    I2C_Peripheral_Start();
-//    
-//    EEPROM_UpdateTemperature();
-//    EEPROM_WriteByte(0xA0,EEPROM_CELL_ADDRESS);
-//    i_rate=EEPROM_ReadByte(EEPROM_CELL_ADDRESS);
-//    InitRegisters();
-  
+
     for(;;)
     {
         if(flag)
         {
             flag=0;
-            //aggiornamento EEPROM ed aggiornamento registro 1
+            
+            //Aggiornamento EEPROM 
             EEPROM_UpdateTemperature();
-            EEPROM_WriteByte(i_rate, EEPROM_CELL_ADDRESS);
+            EEPROM_WriteByte(frequency_rate, EEPROM_CELL_ADDRESS);
             
-        //        LIS3DH_reg1_complete= ((LIS3DH_REG1_L) | (i_rate<<4));
-        //        sprintf(message, "LIS3DH CONFIG REGISTER1: 0x%02X\r\n",LIS3DH_reg1_complete);
-        //        UART_PutString(message);
-            SetRegister1();
-            
+            //Aggiornamento registro 1 del componente LIS3DH
+            SetControlRegister1();  
         }
-        
         ReadAccX();
     }
 }
-
+        //        sprintf(message, "LIS3DH CONFIG REGISTER1: 0x%02X\r\n",LIS3DH_reg1_complete);
+        //        UART_PutString(message);
 /* [] END OF FILE */

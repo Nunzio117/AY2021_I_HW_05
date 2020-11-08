@@ -2,9 +2,9 @@
 #ifndef __EXECUTIVE_FUNCTIONS_H
     #define __EXECUTIVE_FUNCTIONS_H
     
+    #include "cytypes.h"
     void ReadAccX(void);
-//    void SetRegister1(void);
-//    void SetRegister4(void);
+    uint8_t ReadStatusRegister(void);
   
 #endif
 
