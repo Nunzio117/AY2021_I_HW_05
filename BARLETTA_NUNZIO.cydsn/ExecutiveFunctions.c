@@ -3,82 +3,71 @@
 #include "ExecutiveFunctions.h"
 #include "InterruptRoutines.h"
 #include "I2CFunctions.h"
-#include "define.h"
+#include "define.h" //Vi sono presenti tutte le define
 
-uint8_t accelleration[6];
-int16_t OutAccInt[3];
-//float32 OutAccFloat[3];
-uint8_t header = 0xA0; 
-uint8_t footer = 0xC0;
-//uint8_t OutArray[8];
-uint8_t OutArrayf[14];
+uint8_t OutAcc[COUNT_OUT_REG]; //Array contenente le uscite dei registri LIS3DH_OUT
 
-uint8_t LIS3DH_Status_Reg;
+int16_t OutAccDigit[N_ACC_AXIS];//Array contenente i valori in digit delle accelerazioni sui 3 assi
 
+uint8_t OutArray[BUFFER_SIZE]; //Array contenente il buffer di trasmissione
+
+uint8_t LIS3DH_Status_Reg; //Variabile contenente la configurazione dei pin dello status register
+
+//union usata come trick per poter mandare l'intero valore float tramite buffer
 typedef union FloatLongUnion{
 	float f;
 	uint32_t l;
   }float_long;
 
-float_long OutAccFloat[3];
-volatile uint8 lecture;
-//char message[50];
-uint8_t ReadStatusRegister(void)
+float_long OutAccFloat[N_ACC_AXIS];/*Array strutturato ad "union" contenente i valori delle 
+                                     accelerazioni sui 3 assi*/
+
+volatile uint8 lecture; /*variabile usata per indicare la disponiblità di nuovi dati da parte
+del LIS3DH; disponiblità verificata tramite il controllo presente nella funzione sottostante
+"uint8_t ReadStatusRegister(void)" */
+
+uint8_t ReadStatusRegister(void) //Funzione definita in "ExecutiveFunctions.h"
   {
-    error = I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS,
-                                        LIS3DH_STATUS_REG_ADDRESS,
-                                        1,
-                                        &LIS3DH_Status_Reg);
-    if(error==NO_ERROR){
-        if( LIS3DH_Status_Reg & 0b00001000 ){ //ZYXDA
+    //Funzione definita in "I2CFunctions.h" ed esplicitata in "I2CFunctions.c"
+    I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_STATUS_REG_ADDRESS,
+                                &LIS3DH_Status_Reg);
+    
+        //Controllo disponibilità di nuovi dati
+        if( LIS3DH_Status_Reg & 0b00001000 ){ 
             return 1;
         }else{
             return 0;
         }
-    }
-    else
-    {
-       UART_PutString("Error output status register\r\n");
-       return 0;
-    }  
   }
 
-void ReadAccX(void)
+void ReadAcceleration(void)
   {
     lecture=0;
     
     if(ReadStatusRegister())
     {
-        error = I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS,
-                                        LIS3DH_OUT_X_L_ADDRESS,
-                                        6,
-                                        accelleration);
-        if (error == NO_ERROR){
-           lecture=1;
-        }else{
-           UART_PutString("Error output registers\r\n");   
-        }
+        I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_X_L_ADDRESS,
+                                       COUNT_OUT_REG,OutAcc);
+        lecture=1;
     }
     
     if(lecture)
     {   
         int k=0;
-        for(int i=0;i<3;i++){
-            OutAccInt[i] = (int16)((accelleration[i+k] | (accelleration[i+k+1]<<8)))>>4;
-            OutAccFloat[i].f = (CONVERSION*OutAccInt[i]);
-      
+        for(int i=0;i<N_ACC_AXIS;i++){
+            OutAccDigit[i] = (int16)((OutAcc[i+k] | (OutAcc[i+k+1]<<8)))>>4;
+            OutAccFloat[i].f = (CONVERSION*OutAccDigit[i]);
+            
             //completamento del buffer di trasmissione
             k=0;
             while( ((i*4)+k) < ((i+1)*4) ){
-            OutArrayf[(i*4)+(k+1)]= (uint8_t)((OutAccFloat[i].l>>(k*8)) & 0xFF);
+            OutArray[(i*4)+(k+1)]= (uint8_t)((OutAccFloat[i].l>>(k*8)) & 0xFF);
             k+=1;
             }
             
             k=i+1;
-//                sprintf(message, "float: %d\r\n",k);
-//                UART_PutString(message);
-        }
 
+        }
             
 //            OutArrayf[1]= (uint8_t)((OutAccFloat[0].l)>>0 & 0xFF);
 //            OutArrayf[2]= (uint8_t)((OutAccFloat[0].l)>>8 & 0xFF);
@@ -110,10 +99,10 @@ void ReadAccX(void)
 //            OutArrayf[5]= (uint8_t)(ma[2] & 0xFF);
 //            OutArrayf[6]= (uint8_t)((ma[2]>>8) & 0xFF);
         
-            OutArrayf[0]=header;
-            OutArrayf[13]=footer;
+            OutArray[0]=HEADER;
+            OutArray[BUFFER_SIZE-1]=TAIL;
                 
-                UART_PutArray(OutArrayf,14);
+            UART_PutArray(OutArray,BUFFER_SIZE);
                
     		
     //	buf[0]=((x.l&0xFF000000)>>24);

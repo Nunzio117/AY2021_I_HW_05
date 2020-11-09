@@ -1,65 +1,58 @@
 
-//Include header
+//Include required header files
 #include "InitFunctions.h"
 #include "InterruptRoutines.h"
 #include "I2CFunctions.h"
-#include "define.h"
+#include "define.h" //Vi sono presenti tutte le define
 
 uint8_t LIS3DH_ctrl_reg1_complete; /*Variabile usata per indicare il control register 1 del
-                                       LIS3DH al completo, dotato sia della define relativa ai
-                                       4 bit meno significativi, sia dei bit del ODR[3:0]*/
-void InitComponents(void)
+                                   LIS3DH al completo, dotato sia della define relativa ai
+                                   4 bit meno significativi, sia dei bit del ODR[3:0]*/
+
+//Start delle componenti, inizializzazione flag e settaggio dei control register 1 e 4 di LIS3DH
+void InitComponents(void) //Funzione definita in "InitFunctions.h"
   {
     EEPROM_Start();
     UART_Start();
     I2C_Peripheral_Start();
     isr_Button_StartEx(Custom_Button_ISR);
     
-    SetControlRegister1();
-    SetControlRegister4();
+    SetControlRegister1(); //Funzione definita in "InitFunctions.h" ed esplicitata di seguito
+    SetControlRegister4(); //funzione definita in "InitFunctions.h" ed esplicitata di seguito
     
-    flag=0;
+    flag=0; //Variabile definita in "InterruptRoutines.h"
   }  
 
+//Settaggio del control register 1 di LIS3DH
 void SetControlRegister1(void)
   {
-//  char message[50];
-//    EEPROM_UpdateTemperature();
-//    EEPROM_WriteByte(0x01,EEPROM_CELL_ADDRESS);
+    /*Recupero del frequency_rate dalla cella di memoria del EEPROM il cui indirizzo è indicato
+    come define*/
     frequency_rate=EEPROM_ReadByte(EEPROM_CELL_ADDRESS);
     
-//    sprintf(message, "I_rate:0x%02X\r\n", frequency_rate);
-//    UART_PutString(message); 
-    
-    if( (frequency_rate>MAX_FREQUENCY_RATE)||(frequency_rate<MIN_FREQUENCY_RATE) ) { //per vedere se non c'è nulla di anomalo in EEprom
+    //Controllo per assicurasi di essere in un range di valori previsto
+    if( (frequency_rate>MAX_FREQUENCY_RATE)||(frequency_rate<MIN_FREQUENCY_RATE) ) { 
         frequency_rate=MIN_FREQUENCY_RATE;
     }
     
-    LIS3DH_ctrl_reg1_complete= ((LIS3DH_CTRL_REG1_L) | (frequency_rate<<4));
+    //Completamento del control register 1 dati i 4 bit meno significativi ed i 4 bit ODR
+    LIS3DH_ctrl_reg1_complete= ((0x07) | (frequency_rate<<4));
     
-    error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG1_ADDRESS,
-                                         LIS3DH_ctrl_reg1_complete);
-    if (error == NO_ERROR)
-    {
-        UART_PutString("\nLIS3DH CONTROL REGISTER1 correct config\n"); 
-    }
-    else
-    {
-        UART_PutString("\nerror during LIS3DH CONTROL REGISTER1 config \n");    
-    }    
+    //La funzione qui presente, è definita in "I2CFunctions.h" ed esplicitata in "I2CFunctions.c"
+    I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG1_ADDRESS,
+                                         LIS3DH_ctrl_reg1_complete); 
   }
 
+//Settaggio del control register 4 di LIS3DH
 void SetControlRegister4(void)
   {
-    error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG4_ADDRESS,
+    I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG4_ADDRESS,
                                          LIS3DH_CTRL_REG4_COMPLETE);
-    if (error == NO_ERROR)
-    {
-        UART_PutString("LIS3DH CONTROL REGISTER4 correct config\n"); 
-    }
-    else
-    {
-        UART_PutString("error during LIS3DH CONTROL REGISTER4 config\n");    
-    }
   }
+
+//  char message[50];
+//    EEPROM_UpdateTemperature();
+//    EEPROM_WriteByte(0x01,EEPROM_CELL_ADDRESS);
+//    sprintf(message, "I_rate:0x%02X\r\n", frequency_rate);
+//    UART_PutString(message);
 /* [] END OF FILE */

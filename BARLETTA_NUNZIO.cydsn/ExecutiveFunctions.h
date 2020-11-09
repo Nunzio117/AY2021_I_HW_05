@@ -2,9 +2,11 @@
 #ifndef __EXECUTIVE_FUNCTIONS_H
     #define __EXECUTIVE_FUNCTIONS_H
     
+    //Include required header files
     #include "cytypes.h"
-    void ReadAccX(void);
-    uint8_t ReadStatusRegister(void);
+    
+    void ReadAcceleration(void); //Funzione di lettura delle accelereazioni date dal LIS3DH
+    uint8_t ReadStatusRegister(void); //Funzione di lettura dello status register del LIS3DH
   
 #endif
 

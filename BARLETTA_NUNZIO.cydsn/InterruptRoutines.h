@@ -24,7 +24,7 @@
       8    0    1    1    1   HR/Normal/Low-power mode (400 Hz)
       9    1    0    0    0   Low power mode (1.60 kHz)
       10   1    0    0    1   HR/normal (1.344 kHz)
-                            Low-power mode (5.376 kHz)
+                              Low-power mode (5.376 kHz)
     Per il progetto richiesto si lavorerà con frequenze che andranno da 1Hz a 200Hz */  
       
 #endif

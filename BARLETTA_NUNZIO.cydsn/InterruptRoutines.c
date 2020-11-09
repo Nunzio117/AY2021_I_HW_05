@@ -1,7 +1,7 @@
 
 //Include required header files
 #include "InterruptRoutines.h"
-#include "define.h"
+#include "define.h" //Vi sono presenti tutte le define 
 
 CY_ISR(Custom_Button_ISR)
 {
@@ -12,6 +12,5 @@ CY_ISR(Custom_Button_ISR)
     
     flag=1; //Variabile definita in "InterruptRoutines.h"
 }
-
 
 /* [] END OF FILE */

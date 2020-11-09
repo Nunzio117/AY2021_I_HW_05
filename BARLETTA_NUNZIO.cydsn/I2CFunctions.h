@@ -2,21 +2,17 @@
 #ifndef __I2C_FUNCTIONS_H
     #define __I2C_FUNCTIONS_H
     
+    //Include required header files
     #include "cytypes.h"
    
-/**
-*   \brief Error codes.
-* 
-*   This definition defines several error codes that will
-*   be used throughout the project.
-*/
+    /*Enumerazione usata per indicare errori che potrebbero giungere nelle funzioni di scrittura
+    e lettura del registri del dispositivo LIS3DH*/
     typedef enum {
-        NO_ERROR,           ///< No error generated
-        ERROR               ///< Error generated
+        NO_ERROR,           ///< Nessun errore generato
+        ERROR               ///< Errore generato
     } ErrorCode;
     
-    uint8_t error;
-    uint8_t i_register;
+ 
     /** \brief Start the I2C peripheral.
     *   
     *   This function starts the I2C peripheral so that it is ready to work.
@@ -29,12 +25,15 @@
     */
     ErrorCode I2C_Peripheral_Stop(void);
     
-    ErrorCode I2C_Peripheral_WriteRegister(uint8_t device_address,
-                                            uint8_t register_address,
+    ErrorCode I2C_Peripheral_WriteRegister(uint8_t device_address, uint8_t register_address,
                                             uint8_t data);
     
     ErrorCode I2C_Peripheral_WriteRegisterMulti(uint8_t device_address, uint8_t register_address,
                                             uint8_t register_count, uint8_t* data);
+   
+    ErrorCode I2C_Peripheral_ReadRegister(uint8_t device_address, 
+                                            uint8_t register_address,
+                                            uint8_t* data);
     /** 
     *   \brief Read multiple bytes over I2C.
     *   
@@ -57,7 +56,7 @@
     *   \param device_address I2C address of the device to be checked.
     *   \retval Returns true (>0) if device is connected.
     */
-    uint8_t I2C_Peripheral_IsDeviceConnected(uint8_t device_address);
+  
     
 #endif 
 /* [] END OF FILE */
