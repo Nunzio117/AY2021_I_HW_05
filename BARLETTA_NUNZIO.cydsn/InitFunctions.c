@@ -14,13 +14,16 @@ void InitComponents(void) //Funzione definita in "InitFunctions.h"
   {
     EEPROM_Start();
     UART_Start();
+    Timer_Start();
     I2C_Peripheral_Start();
     isr_Button_StartEx(Custom_Button_ISR);
+    isr_Timer_StartEx(Custom_Timer_ISR);
     
     SetControlRegister1(); //Funzione definita in "InitFunctions.h" ed esplicitata di seguito
     SetControlRegister4(); //funzione definita in "InitFunctions.h" ed esplicitata di seguito
     
     flag=0; //Variabile definita in "InterruptRoutines.h"
+    flagTimer=0;
   }  
 
 //Settaggio del control register 1 di LIS3DH

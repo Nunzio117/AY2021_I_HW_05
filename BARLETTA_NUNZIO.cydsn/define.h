@@ -58,15 +58,15 @@
   #define LIS3DH_CTRL_REG4_H (LIS3DH_CTRL_REG4_FS) | (LIS3DH_CTRL_REG4_BLE_BDU<<2)
   #define LIS3DH_CTRL_REG4_COMPLETE LIS3DH_CTRL_REG4_L | (LIS3DH_CTRL_REG4_H<<4)
 
-  /*Define della maschera usata per il controllo sulla disponibilità di nuovi dati, relativi alle
-  accelerazioni, da parte del LIS3DH*/
+  /*Define della maschera usata per il controllo dello status register sulla disponibilità di 
+  nuovi dati, relativi alle accelerazioni, da parte del LIS3DH*/
   #define LIS3DH_STATUS_REG_MASK 0x08 //0x08 --> 0b00001000; l'1 è in corrispondenza di ZYXDA
     
   //Define per la conversione da digit ad accelerazione
   #define ACC_GRAVITY 9.81
   #define CONVERSION LIS3DH_SENSITIVITY*0.001*ACC_GRAVITY
 
-  /*Defina dell'indirizzo cella di memoria EEPROM in cui viene salvata la variabile 
+  /*Define dell'indirizzo cella di memoria EEPROM in cui viene salvata la variabile 
   "frequency_rate" definita in "InterruptRoutines.h" */
   #define EEPROM_CELL_ADDRESS 0x0000
  
@@ -75,7 +75,7 @@
   #define MIN_FREQUENCY_RATE 1
   //NOTA: i valori fanno riferimento alla colonna Index della TABELLA in "InterruptRoutines.h"
   
-  //define del header, del tail e della dimensione del il buffer di trasmissione
+  //define del header, del tail e della dimensione del buffer di trasmissione
   #define HEADER 0xA0
   #define TAIL   0xC0
   #define BUFFER_SIZE 14

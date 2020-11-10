@@ -12,22 +12,28 @@ int main(void)
    
     //Inizializzazione componenti e settaggio flag=0; 
     InitComponents();//Funzione definita in "InitFunctions.h" ed esplicitata in "InitFunctions.c"
-   
+//    int Array_Count_Rate[7]={400,40,16,8,4,2,1};
+    
     for(;;)
     {
         if(flag)
         {
             flag=0;
-            
+            Timer_Stop();
             //Aggiornamento del frequency_rate salavto in EEPROM 
             EEPROM_UpdateTemperature();
             EEPROM_WriteByte(frequency_rate, EEPROM_CELL_ADDRESS);
             
             //Aggiornamento dl control register 1 del componente LIS3DH
             SetControlRegister1(); /*Funzione definita in "InitFunctions.h" ed esplicitata in
-                                    "InitFunctions.c"*/
+                                   "InitFunctions.c"*/
+            flagTimer=0;
+            Timer_Start();
+            
         }
+        
         ReadAcceleration();
+
     }
 }
 

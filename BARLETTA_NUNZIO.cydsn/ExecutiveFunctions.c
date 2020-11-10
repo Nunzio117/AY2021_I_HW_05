@@ -26,30 +26,42 @@ volatile uint8 lecture; /*variabile usata per indicare la disponiblità di nuovi
 del LIS3DH; disponiblità verificata tramite il controllo presente nella funzione sottostante
 "uint8_t ReadStatusRegister(void)" */
 
+int ArrayRate[7]={400,40,16,8,4,2,1};
 uint8_t ReadStatusRegister(void) //Funzione definita in "ExecutiveFunctions.h"
   {
+    
     //Funzione definita in "I2CFunctions.h" ed esplicitata in "I2CFunctions.c"
     I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_STATUS_REG_ADDRESS,
                                 &LIS3DH_Status_Reg);
+
+    //Controllo disponibilità di nuovi dati
+    if( LIS3DH_Status_Reg & LIS3DH_STATUS_REG_MASK )
+    { 
+        return 1;
+    }
     
-        //Controllo disponibilità di nuovi dati
-        if( LIS3DH_Status_Reg & 0b00001000 ){ 
-            return 1;
-        }else{
-            return 0;
-        }
+    return 0;
   }
 
 void ReadAcceleration(void)
   {
     lecture=0;
     
-    if(ReadStatusRegister())
+//    if(ReadStatusRegister())
+//    {
+//        I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_X_L_ADDRESS,
+//                                       COUNT_OUT_REG,OutAcc);
+//        lecture=1;
+//    }
+    
+    if(flagTimer==ArrayRate[frequency_rate-1])
     {
+        flagTimer=0;
         I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_X_L_ADDRESS,
-                                       COUNT_OUT_REG,OutAcc);
+                                         COUNT_OUT_REG,OutAcc);
         lecture=1;
     }
+    
     
     if(lecture)
     {   
