@@ -10,7 +10,6 @@
   //Define relative agli indirizzi dei registri di LIS3DH usati per tale applicazione
   #define LIS3DH_CTRL_REG1_ADDRESS  0x20 
   #define LIS3DH_CTRL_REG4_ADDRESS  0x23
-  #define LIS3DH_STATUS_REG_ADDRESS 0x27
   #define LIS3DH_OUT_X_L_ADDRESS    0x28 
   /*NOTA:dato il fatto che i registri relativi alla lettura dei valori delle accelerazioni lungo
     gli assi x, y e z, sono uno di seguito all'altro (come elencato sotto), è possibile definire
@@ -57,10 +56,6 @@
   #define LIS3DH_CTRL_REG4_BLE_BDU 0b00 //[BDU:BLE]
   #define LIS3DH_CTRL_REG4_H (LIS3DH_CTRL_REG4_FS) | (LIS3DH_CTRL_REG4_BLE_BDU<<2)
   #define LIS3DH_CTRL_REG4_COMPLETE LIS3DH_CTRL_REG4_L | (LIS3DH_CTRL_REG4_H<<4)
-
-  /*Define della maschera usata per il controllo dello status register sulla disponibilità di 
-  nuovi dati, relativi alle accelerazioni, da parte del LIS3DH*/
-  #define LIS3DH_STATUS_REG_MASK 0x08 //0x08 --> 0b00001000; l'1 è in corrispondenza di ZYXDA
     
   //Define per la conversione da digit ad accelerazione
   #define ACC_GRAVITY 9.81
@@ -75,7 +70,25 @@
   #define MIN_FREQUENCY_RATE 1
   //NOTA: i valori fanno riferimento alla colonna Index della TABELLA in "InterruptRoutines.h"
   
-  //define del header, del tail e della dimensione del buffer di trasmissione
+  /*Define per settare il corretto numero di conteggi he la variabile "CountTimer" deve eseguire
+    per compiere il corretto periodo di campionamento alle diverse frequenze di campionamento del
+    LIS3DH, nella modalità high resolution (per la nostra applicazione si è esclusa a */
+  #define COUNT_FS_1H   400 
+  #define COUNT_FS_10H  40
+  #define COUNT_FS_25H  16
+  #define COUNT_FS_50H  8
+  #define COUNT_FS_100H 4
+  #define COUNT_FS_200H 2
+  /*NOTA: i valori sono settati in tal modo siccome il "Timer" è impostato con periodo 2.5ms;
+    per la nostra applicazione si è esclusa la frequenza a 400Hz
+    FS 1Hz  -->  CounTimer=400
+    FS 10Hz -->  CounTimer=40
+    FS 25Hz -->  CounTimer=16
+    FS 50Hz -->  CounTimer=8
+    FS 100Hz --> CounTimer=4
+    FS 200Hz --> CounTimer=2 */
+  
+  //Define del header, del tail e della dimensione del buffer di trasmissione
   #define HEADER 0xA0
   #define TAIL   0xC0
   #define BUFFER_SIZE 14

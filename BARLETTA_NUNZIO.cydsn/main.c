@@ -10,16 +10,15 @@ int main(void)
 {   
     CyGlobalIntEnable; /*Enable global interrupts.*/
    
-    //Inizializzazione componenti e settaggio flag=0; 
+    //Inizializzazione componenti e settaggio variabili; 
     InitComponents();//Funzione definita in "InitFunctions.h" ed esplicitata in "InitFunctions.c"
-//    int Array_Count_Rate[7]={400,40,16,8,4,2,1};
     
     for(;;)
     {
         if(flag)
         {
             flag=0;
-            Timer_Stop();
+//            Timer_Stop();
             //Aggiornamento del frequency_rate salavto in EEPROM 
             EEPROM_UpdateTemperature();
             EEPROM_WriteByte(frequency_rate, EEPROM_CELL_ADDRESS);
@@ -27,17 +26,13 @@ int main(void)
             //Aggiornamento dl control register 1 del componente LIS3DH
             SetControlRegister1(); /*Funzione definita in "InitFunctions.h" ed esplicitata in
                                    "InitFunctions.c"*/
-            flagTimer=0;
-            Timer_Start();
+            CountTimer=0;
+//            Timer_Start();
             
         }
         
-        ReadAcceleration();
-
+        ReadAcceleration();//Lettura accelerazioni
     }
 }
 
-//char message[50];
-//        sprintf(message, "LIS3DH CONFIG REGISTER1: 0x%02X\r\n",LIS3DH_reg1_complete);
-//        UART_PutString(message);
 /* [] END OF FILE */

@@ -6,7 +6,6 @@
     #include "cytypes.h"
     
     void ReadAcceleration(void); //Funzione di lettura delle accelereazioni date dal LIS3DH
-    uint8_t ReadStatusRegister(void); //Funzione di lettura dello status register del LIS3DH
   
 #endif
 

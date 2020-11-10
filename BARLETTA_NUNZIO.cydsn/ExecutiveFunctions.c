@@ -11,10 +11,9 @@ int16_t OutAccDigit[N_ACC_AXIS];//Array contenente i valori in digit delle accel
 
 uint8_t OutArray[BUFFER_SIZE]; //Array contenente il buffer di trasmissione
 
-uint8_t LIS3DH_Status_Reg; //Variabile contenente la configurazione dei pin dello status register
-
-//union usata come trick per poter mandare l'intero valore float tramite buffer
-typedef union FloatLongUnion{
+//Union usata come trick per poter mandare l'intero valore float tramite buffer
+typedef union FloatLongUnion
+  {
 	float f;
 	uint32_t l;
   }float_long;
@@ -22,107 +21,51 @@ typedef union FloatLongUnion{
 float_long OutAccFloat[N_ACC_AXIS];/*Array strutturato ad "union" contenente i valori delle 
                                      accelerazioni sui 3 assi*/
 
-volatile uint8 lecture; /*variabile usata per indicare la disponiblità di nuovi dati da parte
-del LIS3DH; disponiblità verificata tramite il controllo presente nella funzione sottostante
-"uint8_t ReadStatusRegister(void)" */
-
-int ArrayRate[7]={400,40,16,8,4,2,1};
-uint8_t ReadStatusRegister(void) //Funzione definita in "ExecutiveFunctions.h"
+int ArrayRate[MAX_FREQUENCY_RATE]={ COUNT_FS_1H, COUNT_FS_10H, COUNT_FS_25H, 
+                                    COUNT_FS_50H, COUNT_FS_100H, COUNT_FS_200H};
+/*Array contenente il numero di conteggi che la variabile "CountTimer" deve eseguire per compiere
+il corretto periodo di campionamento alle diverse frequenze di campionamento del LIS3DH, nella
+modalità high resolution; vedere la NOTA relativa in "define.h". 
+"CountTimer è definita in "InterruptRoutines.h"*/           
+                 
+//Funzione di lettura accelerazioni e definita in "ExecutiveFunctions.h"
+void ReadAcceleration(void) 
   {
     
-    //Funzione definita in "I2CFunctions.h" ed esplicitata in "I2CFunctions.c"
-    I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_STATUS_REG_ADDRESS,
-                                &LIS3DH_Status_Reg);
-
-    //Controllo disponibilità di nuovi dati
-    if( LIS3DH_Status_Reg & LIS3DH_STATUS_REG_MASK )
-    { 
-        return 1;
-    }
-    
-    return 0;
-  }
-
-void ReadAcceleration(void)
-  {
-    lecture=0;
-    
-//    if(ReadStatusRegister())
-//    {
-//        I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_X_L_ADDRESS,
-//                                       COUNT_OUT_REG,OutAcc);
-//        lecture=1;
-//    }
-    
-    if(flagTimer==ArrayRate[frequency_rate-1])
-    {
-        flagTimer=0;
+    //Controllo disponibilità dati tenendo conto del periodo di campionamento del LIS3DH;
+    if(CountTimer==ArrayRate[frequency_rate-1])
+    {   
+        CountTimer=0;
+        
+        //Lettura dei registri LIS3DH_OUT
         I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_X_L_ADDRESS,
                                          COUNT_OUT_REG,OutAcc);
-        lecture=1;
-    }
-    
-    
-    if(lecture)
-    {   
+        
+        //Assegnazione HEADER e TAIL al buffer di trasmissione
+        OutArray[0]=HEADER;
+        OutArray[BUFFER_SIZE-1]=TAIL;
+        
         int k=0;
-        for(int i=0;i<N_ACC_AXIS;i++){
+        for(int i=0;i<N_ACC_AXIS;i++)
+        {
+            //Composizione delle accelerazioni in digit e conversione a float
             OutAccDigit[i] = (int16)((OutAcc[i+k] | (OutAcc[i+k+1]<<8)))>>4;
             OutAccFloat[i].f = (CONVERSION*OutAccDigit[i]);
             
-            //completamento del buffer di trasmissione
+            //Completamento del buffer di trasmissione
             k=0;
-            while( ((i*4)+k) < ((i+1)*4) ){
-            OutArray[(i*4)+(k+1)]= (uint8_t)((OutAccFloat[i].l>>(k*8)) & 0xFF);
-            k+=1;
+            while( ((i*4)+k) < ((i+1)*4) )
+            {
+                OutArray[(i*4)+(k+1)]= (uint8_t)((OutAccFloat[i].l>>(k*8)) & 0xFF);
+                k+=1;
             }
             
             k=i+1;
-
         }
-            
-//            OutArrayf[1]= (uint8_t)((OutAccFloat[0].l)>>0 & 0xFF);
-//            OutArrayf[2]= (uint8_t)((OutAccFloat[0].l)>>8 & 0xFF);
-//            OutArrayf[3]= (uint8_t)((OutAccFloat[0].l)>>16 & 0xFF);
-//            OutArrayf[4]= (uint8_t)((OutAccFloat[0].l)>>24 & 0xFF);
-//            
-//            OutArrayf[5]= (uint8_t)((OutAccFloat[1].l)>>0 & 0xFF);
-//            OutArrayf[6]= (uint8_t)((OutAccFloat[1].l)>>8 & 0xFF);
-//            OutArrayf[7]= (uint8_t)((OutAccFloat[1].l)>>16 & 0xFF);
-//            OutArrayf[8]= (uint8_t)((OutAccFloat[1].l)>>24 & 0xFF);
-//            
-//            OutArrayf[9]= (uint8_t)((OutAccFloat[2].l)>>0 & 0xFF);
-//            OutArrayf[10]= (uint8_t)((OutAccFloat[2].l)>>8 & 0xFF);
-//            OutArrayf[11]= (uint8_t)((OutAccFloat[2].l)>>16 & 0xFF);
-//            OutArrayf[12]= (uint8_t)((OutAccFloat[2].l)>>24 & 0xFF);
-            
-
-
-//            int16 ma[3];
-//            ma[0]= (int16) (OutAccFloat[0]*1000);
-//            ma[1]= (int16) (OutAccFloat[1]*1000);
-//            ma[2]= (int16) (OutAccFloat[2]*1000);
-//        
-//            OutArrayf[1]= (uint8_t)(ma[0] & 0xFF);
-//            OutArrayf[2]= (uint8_t)((ma[0]>>8) & 0xFF);
-//            OutArrayf[3]= (uint8_t)(ma[1] & 0xFF);
-//            OutArrayf[4]= (uint8_t)((ma[1]>>8) & 0xFF);
-//            
-//            OutArrayf[5]= (uint8_t)(ma[2] & 0xFF);
-//            OutArrayf[6]= (uint8_t)((ma[2]>>8) & 0xFF);
-        
-            OutArray[0]=HEADER;
-            OutArray[BUFFER_SIZE-1]=TAIL;
-                
-            UART_PutArray(OutArray,BUFFER_SIZE);
-               
-    		
-    //	buf[0]=((x.l&0xFF000000)>>24);
-    //	buf[1]=((x.l&0x00FF0000)>>16);
-    //	buf[2]=((x.l&0x0000FF00)>>8);
-    //	buf[3]=((x.l&0x000000FF)>>0);
-                     
+         
+        UART_PutArray(OutArray,BUFFER_SIZE);              
     }
-        
+    
   }
+
 /* [] END OF FILE */
