@@ -9,8 +9,9 @@ uint8_t LIS3DH_ctrl_reg1_complete; /*Variabile usata per indicare il control reg
                                    LIS3DH al completo, dotato sia della define relativa ai
                                    4 bit meno significativi, sia dei bit del ODR[3:0]*/
 
-//Inizializzione componenti e variabili, settaggio dei control register 1 e 4 di LIS3DH
-void InitComponents(void) //Funzione definita in "InitFunctions.h"
+/*Funzione per inizializzione componenti e variabili, settaggio dei control register 1 e 4 di 
+LIS3DH e definita in "InitFunctions.h"*/
+void InitComponents(void) 
   {
     EEPROM_Start();
     UART_Start();
@@ -24,11 +25,12 @@ void InitComponents(void) //Funzione definita in "InitFunctions.h"
     SetControlRegister4(); //funzione definita in "InitFunctions.h" ed esplicitata di seguito
     
     flag=0; //Variabile definita in "InterruptRoutines.h"
+    flagStatusReg=0;
     CountTimer=0; //Variabile definita in "InterruptRoutines.h"
   }  
 
-//Settaggio del control register 1 di LIS3DH
-void SetControlRegister1(void)
+//Funzione per il settaggio del control register 1 di LIS3DH e definita in "InitFunctions.h"
+void SetControlRegister1(void) 
   {
     //Recupero del frequency_rate dalla cella di memoria del EEPROM scelta
     frequency_rate=EEPROM_ReadByte(EEPROM_CELL_ADDRESS);
@@ -47,7 +49,7 @@ void SetControlRegister1(void)
                                          LIS3DH_ctrl_reg1_complete); 
   }
 
-//Settaggio del control register 4 di LIS3DH
+//Funzione per il settaggio del control register 4 di LIS3DH e definita in "InitFunctions.h"
 void SetControlRegister4(void)
   {
     I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG4_ADDRESS,

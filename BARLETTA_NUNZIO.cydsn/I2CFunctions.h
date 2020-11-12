@@ -6,57 +6,40 @@
     #include "cytypes.h"
    
     /*Enumerazione usata per indicare errori che potrebbero giungere nelle funzioni di scrittura
-    e lettura del registri del dispositivo LIS3DH*/
+    e lettura dei registri del dispositivo LIS3DH; uso per scopi di debugging*/
     typedef enum {
         NO_ERROR,           ///< Nessun errore generato
         ERROR               ///< Errore generato
     } ErrorCode;
     
- 
-    /** \brief Start the I2C peripheral.
-    *   
-    *   This function starts the I2C peripheral so that it is ready to work.
-    */
-    ErrorCode I2C_Peripheral_Start(void);
     
-    /** \brief Stop the I2C peripheral.
-    *   
-    *   This function stops the I2C peripheral from working.
-    */
-    ErrorCode I2C_Peripheral_Stop(void);
+    ErrorCode I2C_Peripheral_Start(void); //Funzione per startare la periferica I2C
     
+    ErrorCode I2C_Peripheral_Stop(void); //Funzione per stoppare la periferica I2C
+    
+    /*Funzione per effettuare un'operazione di scrittura su un registro della perifierica I2C;
+    i parametri richiesti sono:
+    - indirizzo del device collegato tramite counicazione I2C --> "device_address";
+    - indirizzo del registro in cui scrivere il mio dato --> "register_address";
+    - dato da inserire nel registro designato --> "data". */
     ErrorCode I2C_Peripheral_WriteRegister(uint8_t device_address, uint8_t register_address,
                                             uint8_t data);
-    
-    ErrorCode I2C_Peripheral_WriteRegisterMulti(uint8_t device_address, uint8_t register_address,
-                                            uint8_t register_count, uint8_t* data);
    
-    ErrorCode I2C_Peripheral_ReadRegister(uint8_t device_address, 
-                                            uint8_t register_address,
+     /*Funzione per effettuare un'operazione di lettura su un registro della perifierica I2C;
+    i parametri richiesti sono:
+    - indirizzo del device collegato tramite counicazione I2C --> "device_address";
+    - indirizzo del registro da cui leggere il byte --> "register_address";
+    - puntatore a una variabile in cui verrà salvato il byte --> "data". */
+    ErrorCode I2C_Peripheral_ReadRegister(uint8_t device_address, uint8_t register_address,
                                             uint8_t* data);
-    /** 
-    *   \brief Read multiple bytes over I2C.
-    *   
-    *   This function performs a complete reading operation over I2C from multiple
-    *   registers.
-    *   \param device_address I2C address of the device to talk to.
-    *   \param register_address Address of the first register to be read.
-    *   \param register_count Number of registers we want to read.
-    *   \param data Pointer to an array where data will be saved.
-    */
-    ErrorCode I2C_Peripheral_ReadRegisterMulti(uint8_t device_address,
-                                                uint8_t register_address,
-                                                uint8_t register_count,
-                                                uint8_t* data);
-    
-    /**
-    *   \brief Check if device is connected over I2C.
-    *
-    *   This function checks if a device is connected over the I2C lines.
-    *   \param device_address I2C address of the device to be checked.
-    *   \retval Returns true (>0) if device is connected.
-    */
-  
-    
+ 
+    /*Funzione per effettuare un'operazione di lettura su più registri della perifierica I2C;
+    i parametri richiesti sono:
+    - indirizzo del device collegato tramite counicazione I2C --> "device_address";
+    - indirizzo del registro da cui leggere il byte --> "register_address";
+    - puntatore a un'array in cui verranno salvati i byte --> "data". */
+    ErrorCode I2C_Peripheral_ReadRegisterMulti(uint8_t device_address, uint8_t register_address,
+                                               uint8_t register_count, uint8_t* data);
+ 
 #endif 
 /* [] END OF FILE */

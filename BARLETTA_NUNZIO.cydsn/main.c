@@ -9,12 +9,14 @@
 int main(void)
 {   
     CyGlobalIntEnable; /*Enable global interrupts.*/
-   
+    lecture=0;
+    
     //Inizializzazione componenti e settaggio variabili; 
     InitComponents();//Funzione definita in "InitFunctions.h" ed esplicitata in "InitFunctions.c"
     
     for(;;)
     {
+        
         if(flag)
         {
             flag=0;
@@ -27,11 +29,14 @@ int main(void)
             SetControlRegister1(); /*Funzione definita in "InitFunctions.h" ed esplicitata in
                                    "InitFunctions.c"*/
             CountTimer=0;
+            flagStatusReg=0;
+            lecture=0;
 //            Timer_Start();
             
         }
         
         ReadAcceleration();//Lettura accelerazioni
+        
     }
 }
 

@@ -10,6 +10,7 @@
   //Define relative agli indirizzi dei registri di LIS3DH usati per tale applicazione
   #define LIS3DH_CTRL_REG1_ADDRESS  0x20 
   #define LIS3DH_CTRL_REG4_ADDRESS  0x23
+  #define LIS3DH_STATUS_REG_ADDRESS 0x27
   #define LIS3DH_OUT_X_L_ADDRESS    0x28 
   /*NOTA:dato il fatto che i registri relativi alla lettura dei valori delle accelerazioni lungo
     gli assi x, y e z, sono uno di seguito all'altro (come elencato sotto), è possibile definire
@@ -57,6 +58,10 @@
   #define LIS3DH_CTRL_REG4_H (LIS3DH_CTRL_REG4_FS) | (LIS3DH_CTRL_REG4_BLE_BDU<<2)
   #define LIS3DH_CTRL_REG4_COMPLETE LIS3DH_CTRL_REG4_L | (LIS3DH_CTRL_REG4_H<<4)
     
+  /*Define della maschera usata per il controllo dello status register sulla disponibilità di 
+  nuovi dati, relativi alle accelerazioni, da parte del LIS3DH*/
+  #define LIS3DH_STATUS_REG_MASK 0x08 //0x08 --> 0b00001000; l'1 è in corrispondenza di ZYXDA
+  
   //Define per la conversione da digit ad accelerazione
   #define ACC_GRAVITY 9.81
   #define CONVERSION LIS3DH_SENSITIVITY*0.001*ACC_GRAVITY

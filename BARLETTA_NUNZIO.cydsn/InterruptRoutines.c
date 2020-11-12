@@ -19,6 +19,7 @@ CY_ISR(Custom_Button_ISR)
 CY_ISR(Custom_Timer_ISR)
 {
     Timer_ReadStatusRegister();
+    flagStatusReg=1;
     CountTimer+=1; //Variabile definita in "InterruptRoutines.h"
 }
 

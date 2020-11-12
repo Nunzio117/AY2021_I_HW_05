@@ -10,7 +10,7 @@
     CY_ISR_PROTO(Custom_Timer_ISR);
     
     volatile uint8 flag; //Variabile usata per indicare l'avvenuta premuta del pulsante
-    
+    volatile uint8 flagStatusReg;
     int CountTimer; //Variabile usata per conteggiare l'evento timer
     int frequency_rate; /*Variabile usata per indicare la combinazione dei bit ODR[3:0] del
                          control register 1 del LIS3DH,i quali impostano la freqeunza di 

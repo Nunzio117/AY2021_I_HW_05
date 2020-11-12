@@ -1,110 +1,110 @@
 
-
 //Include required header files
 #include "I2CFunctions.h"
-#include "I2C_Master.h" //inclus nel project al massimo vedi poi che fa
-#include "project.h"
+#include "I2C_Master.h" 
+
+// <<< NOTA SUI RETURN: sono stati lasciati per scopo di debugging >>>
+
+//Funzione per startare la periferica I2C e definita in "I2CFunctions.h"
 ErrorCode I2C_Peripheral_Start(void) 
   {
-    // Start I2C peripheral
     I2C_Master_Start();  
-
-    // Return no error since start function does not return any error
-    return NO_ERROR;
+    
+    return NO_ERROR; 
   }
 
-    
+//Funzione per stoppare la periferica I2C e definita in "I2CFunctions.h"    
 ErrorCode I2C_Peripheral_Stop(void)
   {
-    // Stop I2C peripheral
     I2C_Master_Stop();
-    // Return no error since stop function does not return any error
+  
     return NO_ERROR;
   }
     
-    
-ErrorCode I2C_Peripheral_WriteRegister(uint8_t device_address,
-                                            uint8_t register_address,
+/*Funzione per effettuare un'operazione di scrittura su un registro della perifierica I2C e 
+definita in I2CFunctions.h" */
+ErrorCode I2C_Peripheral_WriteRegister(uint8_t device_address, uint8_t register_address,
                                             uint8_t data)
   {
-    // Send start condition
+    //Invio della condizione di start
     uint8_t error = I2C_Master_MasterSendStart(device_address, I2C_Master_WRITE_XFER_MODE);
     if (error == I2C_Master_MSTR_NO_ERROR)
     {
-        // Write register address
+        //Scrittura dell'indirizzo del registro
         error = I2C_Master_MasterWriteByte(register_address);
         if (error == I2C_Master_MSTR_NO_ERROR)
         {
-            // Write byte of interest
+            //Scrittura del byte di interesse
             error = I2C_Master_MasterWriteByte(data);
         }
     }
-    // Send stop condition
+    //Invio della condizione di stop
     I2C_Master_MasterSendStop();
-    // Return error code
+    //Return error code
     return error ? ERROR : NO_ERROR;
   }
-    
- ErrorCode I2C_Peripheral_ReadRegister(uint8_t device_address, 
-                                            uint8_t register_address,
-                                            uint8_t* data)
-    {
-        // Send start condition
-        uint8_t error = I2C_Master_MasterSendStart(device_address,I2C_Master_WRITE_XFER_MODE);
-        if (error == I2C_Master_MSTR_NO_ERROR)
-        {
-            // Write address of register to be read
-            error = I2C_Master_MasterWriteByte(register_address);
-            if (error == I2C_Master_MSTR_NO_ERROR)
-            {
-                // Send restart condition
-                error = I2C_Master_MasterSendRestart(device_address, I2C_Master_READ_XFER_MODE);
-                if (error == I2C_Master_MSTR_NO_ERROR)
-                {
-                    // Read data without acknowledgement
-                    *data = I2C_Master_MasterReadByte(I2C_Master_NAK_DATA);
-                }
-            }
-        }
-        // Send stop condition
-        I2C_Master_MasterSendStop();
-        // Return error code
-        return error ? ERROR : NO_ERROR;
-    }
-    
-ErrorCode I2C_Peripheral_ReadRegisterMulti(uint8_t device_address, uint8_t register_address,
-                                                uint8_t register_count, uint8_t* data)
+ 
+/*Funzione per effettuare un'operazione di lettura su un registro della perifierica I2C e 
+definita in I2CFunctions.h" */
+ErrorCode I2C_Peripheral_ReadRegister(uint8_t device_address, uint8_t register_address,
+                                       uint8_t* data)
   {
-    // Send start condition
+    //Invio della condizione di start
     uint8_t error = I2C_Master_MasterSendStart(device_address,I2C_Master_WRITE_XFER_MODE);
     if (error == I2C_Master_MSTR_NO_ERROR)
     {
-        // Write address of register to be read with the MSB equal to 1
+        //Scrittura dell'indirizzo del registro
+        error = I2C_Master_MasterWriteByte(register_address);
+        if (error == I2C_Master_MSTR_NO_ERROR)
+        {
+            //Invio della condizione di restart
+            error = I2C_Master_MasterSendRestart(device_address, I2C_Master_READ_XFER_MODE);
+            if (error == I2C_Master_MSTR_NO_ERROR)
+            {
+                //Lettura dato senza acknowledgement
+                *data = I2C_Master_MasterReadByte(I2C_Master_NAK_DATA);
+            }
+        }
+    }
+    //Invio della condizione di stop
+    I2C_Master_MasterSendStop();
+    //Return error code
+    return error ? ERROR : NO_ERROR;
+  }   
+
+/*Funzione per effettuare un'operazione di lettura su più registri della perifierica I2C e 
+definita in I2CFunctions.h" */
+ErrorCode I2C_Peripheral_ReadRegisterMulti(uint8_t device_address, uint8_t register_address,
+                                                uint8_t register_count, uint8_t* data)
+  {
+    //Invio della condizione di start
+    uint8_t error = I2C_Master_MasterSendStart(device_address,I2C_Master_WRITE_XFER_MODE);
+    if (error == I2C_Master_MSTR_NO_ERROR)
+    {
+        //Indirizzo di scrittura del registro da leggere con MSB uguale a 1
         register_address |= 0x80; // Datasheet indication for multi read -- autoincrement
         error = I2C_Master_MasterWriteByte(register_address);
         if (error == I2C_Master_MSTR_NO_ERROR)
         {
-            // Send restart condition
+            //Invio della condizione di restart
             error = I2C_Master_MasterSendRestart(device_address, I2C_Master_READ_XFER_MODE);
             if (error == I2C_Master_MSTR_NO_ERROR)
             {
-                // Continue reading until we have register to read
+                //Continua lettura dei registri finchè vi sono registri da leggere
                 uint8_t counter;
                 for (counter=0;counter<register_count-1;counter++)
                 {
                     data[counter] = I2C_Master_MasterReadByte(I2C_Master_ACK_DATA);
                 }
-                // Read last data without acknowledgement
-                data[register_count-1]
-                    = I2C_Master_MasterReadByte(I2C_Master_NAK_DATA);
+                //Lettura del ultimo dato senza acknowledgement
+                data[register_count-1]= I2C_Master_MasterReadByte(I2C_Master_NAK_DATA);
             }
         }
     }
-    // Send stop condition
+    //Invio della condizione di stop
     I2C_Master_MasterSendStop();
-    // Return error code
+    //Return error code
     return error ? ERROR : NO_ERROR;
   }
-    
-
+   
 /* [] END OF FILE */
