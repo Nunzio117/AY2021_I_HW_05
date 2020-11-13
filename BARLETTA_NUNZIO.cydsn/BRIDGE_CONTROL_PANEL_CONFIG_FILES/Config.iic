@@ -1,0 +1,8 @@
+;[h=A0] --> header
+;@0AccX @1AccX @2AccX @3AccX --> Bytes relativi alla accelerazione X (float)
+;@0AccY @1AccY @2AccY @3AccY --> Bytes relativi alla accelerazione Y (float) 
+;@0AccZ @1AccZ @2AccZ @3AccZ --> Bytes relativi alla accelerazione Z (float)
+;[t=C0] --> tail
+;Bit rate: 38400 (>22400)--> fare riferimento a quanto detto nel top design
+RX8 [h=A0] @0AccX @1AccX @2AccX @3AccX @0AccY @1AccY @2AccY @3AccY @0AccZ @1AccZ @2AccZ @3AccZ [t=C0]
+

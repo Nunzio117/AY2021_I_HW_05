@@ -2,15 +2,15 @@
 //Include required header files
 #include "ExecutiveFunctions.h"
 #include "InterruptRoutines.h"
+#include "InitFunctions.h"
 #include "I2CFunctions.h"
 #include "define.h" //Vi sono presenti tutte le define
+
 
 uint8_t LIS3DH_Status_Reg; //Variabile per la configurazione dei pin dello status register
 
 uint8_t OutAcc[COUNT_OUT_REG]; //Array per le uscite dei registri LIS3DH_OUT
-
 int16_t OutAccDigit[N_ACC_AXIS];//Array per i valori in digit delle accelerazioni sui 3 assi
-
 uint8_t OutArray[BUFFER_SIZE]; //Array per il buffer di trasmissione
 
 //Union usata come trick per poter mandare l'intero valore float tramite buffer di trasmissione
@@ -19,51 +19,58 @@ typedef union FloatLongUnion
 	float f; //Parte per contenuto float
 	uint32_t l;//Parte in uint32 usata nel casting per il completamento del buffer di trasmissione
   }float_long;
-
 float_long OutAccFloat[N_ACC_AXIS];/*Array strutturato ad "union" per i valori delle 
                                      accelerazioni sui 3 assi*/
 
-int ArrayRate[MAX_FREQUENCY_RATE]={ COUNT_FS_1H, COUNT_FS_10H, COUNT_FS_25H, 
-                                    COUNT_FS_50H, COUNT_FS_100H, COUNT_FS_200H};
-/*Array contenente il numero di conteggi che la variabile "CountTimer" deve eseguire per compiere
-il corretto periodo di campionamento alle diverse frequenze di campionamento del LIS3DH, nella
-modalità high resolution; vedere la NOTA relativa ai "COUNT_FS" in "define.h". 
-"CountTimer è definita in "InterruptRoutines.h"*/           
+
+//Funzione per esecuzione loop e definita in "ExecutiveFunctions.h"
+void Execution(void){
+    
+    if(flag)
+    {
+        flag=0; //Variabile definita in "InterruptRoutines.h"
+        
+        //Aggiornamento del frequency rate salvato in EEPROM 
+        EEPROM_UpdateTemperature();
+        EEPROM_WriteByte(frequency_rate, EEPROM_CELL_ADDRESS);
+        
+        /*Aggiornamento dl control register 1 del componente LIS3DH;
+        Funzione definita in "InitFunctions.h" ed esplicitata in "InitFunctions.c"*/
+        SetControlRegister1(); 
+    }
+        
+    /*Lettura status register ed accelerazioni
+    Funzione definita in "ExecutiveFunctions.h" ed esplicitata in qui di seguito*/
+    ReadAcceleration();
+}
 
 
-
-void ReadStatusRegister(uint8* da) //Funzione definita in "ExecutiveFunctions.h"
+//Funzione per lettura dello status register di LIS3DH e definita in "ExecutiveFunctions.h"
+uint8 ReadStatusRegister(void)
   {
-    *da=0;
-    //Funzione definita in "I2CFunctions.h" ed esplicitata in "I2CFunctions.c"
+    
+    /*Lettura dello status register;
+    La funzione qui presente è definita in "I2CFunctions.h" ed esplicitata in "I2CFunctions.c"*/
     I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_STATUS_REG_ADDRESS,
                                 &LIS3DH_Status_Reg);
     
     //Controllo disponibilità di nuovi dati
     if(LIS3DH_Status_Reg & LIS3DH_STATUS_REG_MASK)
     { 
-        *da=1;
-    }  
+        return 1;
+    }
+    
+    return 0;
         
   }
 
-void ReadAcceleration(void) //Funzione definita in "ExecutiveFunctions.h"
+//Funzione per lettura accelerazioni e definita in "ExecutiveFunctions.h"
+void ReadAcceleration(void) 
   {
- 
-//    if( flagStatusReg )
-//    {
-//       flagStatusReg=0;
-       ReadStatusRegister(&lecture);
-//    }
-    
-    //Controllo disponibilità dati tenendo conto del periodo di campionamento del LIS3DH;
-    if( lecture )
+  
+    //Controllo disponibilità di nuovi dati tenendo conto dello status register del LIS3DH
+    if( ReadStatusRegister() )
     {   
-
-        lecture=0;
-//        CountTimer=0;
-//        CountTimer==ArrayRate[frequency_rate-1])
-        
         //Lettura dei registri LIS3DH_OUT
         I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_X_L_ADDRESS,
                                          COUNT_OUT_REG,OutAcc);
@@ -90,11 +97,11 @@ void ReadAcceleration(void) //Funzione definita in "ExecutiveFunctions.h"
             k=i+1;
         }
         
-        UART_PutArray(OutArray,BUFFER_SIZE);
-
-        
+        //Invio del buffer
+        UART_PutArray(OutArray,BUFFER_SIZE);     
     }
     
   }
+
 
 /* [] END OF FILE */

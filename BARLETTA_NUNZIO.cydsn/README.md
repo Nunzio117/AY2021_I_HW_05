@@ -6,13 +6,12 @@ Le richieste per tale assignment sono esplicitate nel README generale.
 
 ## Schematico
 Vi sono presenti i seguenti componenti:
-- Pagina 1:
+-Pagina 1:
 	- I2C_Master: componente del PSoC che nella comunicazione I2C è il master rispetto alla periferica LIS3DH;
-	- UART: componente interno al PSoC per comunicazione con terminale;
 	- EEPROM: componente del PSoC relativo alla memoria dati non volatile;
 	- Debouncer: componente del PSoC per gestire l'antirimbalzo dello switch/pulsante.
-- Pagina 2:
-	--
+-Pagina 2:
+	- UART: componente interno al PSoC per comunicazione con terminale;
 	
 
 ## Port/Pin
@@ -29,7 +28,9 @@ Nei file di "Header" e di "Source" vi sono esplicitati già i dettagli reativi a
 
 
 ## Nota sulla programmazione dell'elaborato
----
+Inserendo un Timer come gestione ulteriore per la lettura dello status register del dispositivo LIS3DH, non si avvertono
+differenze sostanziali nella visualizzazione del frequency rate dal bridge control panel. Pertanto non vi è stato inserito
+alcun componente timer per tale scopo. 
 
 
 ## Bridge control panel confing

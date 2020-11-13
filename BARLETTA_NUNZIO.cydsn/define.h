@@ -5,7 +5,7 @@
   //Define relativa all'indirizzo del dispositivo LIS3DH
   #define LIS3DH_DEVICE_ADDRESS 0x18 /*0b001100x; x è un bit arbitrario che dipende dal pin SDO 
                                       e nel progetto in questione tale pin è connesso a GND e 
-                                      quindi x=0 --> 0b0011000 --> 0x18*/
+                                      quindi x=0 --> 0b00011000 --> 0x18*/
     
   //Define relative agli indirizzi dei registri di LIS3DH usati per tale applicazione
   #define LIS3DH_CTRL_REG1_ADDRESS  0x20 
@@ -74,24 +74,6 @@
   #define MAX_FREQUENCY_RATE 6
   #define MIN_FREQUENCY_RATE 1
   //NOTA: i valori fanno riferimento alla colonna Index della TABELLA in "InterruptRoutines.h"
-  
-  /*Define per settare il corretto numero di conteggi he la variabile "CountTimer" deve eseguire
-    per compiere il corretto periodo di campionamento alle diverse frequenze di campionamento del
-    LIS3DH, nella modalità high resolution (per la nostra applicazione si è esclusa a */
-  #define COUNT_FS_1H   400 
-  #define COUNT_FS_10H  40
-  #define COUNT_FS_25H  16
-  #define COUNT_FS_50H  8
-  #define COUNT_FS_100H 4
-  #define COUNT_FS_200H 2
-  /*NOTA: i valori sono settati in tal modo siccome il "Timer" è impostato con periodo 2.5ms;
-    per la nostra applicazione si è esclusa la frequenza a 400Hz
-    FS 1Hz  -->  CounTimer=400
-    FS 10Hz -->  CounTimer=40
-    FS 25Hz -->  CounTimer=16
-    FS 50Hz -->  CounTimer=8
-    FS 100Hz --> CounTimer=4
-    FS 200Hz --> CounTimer=2 */
   
   //Define del header, del tail e della dimensione del buffer di trasmissione
   #define HEADER 0xA0
