@@ -253,7 +253,9 @@
     <Group key="Pin">
       <Data key="02f2cf2c-2c7a-49df-9246-7a3435c21be3" value="SCL" />
       <Data key="8d318d8b-cf7b-4b6b-b02c-ab1c5c49d0ba" value="Button_Pin" />
+      <Data key="27f1e887-7789-4d98-b906-7692066205b0" value="Rx_1" />
       <Data key="22863ebe-a37b-476f-b252-6e49a8c00b12" value="SDA" />
+      <Data key="211970f3-a96b-4099-8de9-b267662d5124" value="Tx_1" />
       <Data key="1425177d-0d0e-4468-8bcc-e638e5509a9b" value="Rx" />
       <Data key="ed092b9b-d398-4703-be89-cebf998501f6" value="Tx" />
     </Group>
@@ -3352,9 +3354,19 @@
         <Data key="Port Format" value="2,2" />
       </Group>
     </Group>
+    <Group key="27f1e887-7789-4d98-b906-7692066205b0">
+      <Group key="0">
+        <Data key="Port Format" value="12,6" />
+      </Group>
+    </Group>
     <Group key="22863ebe-a37b-476f-b252-6e49a8c00b12">
       <Group key="0">
         <Data key="Port Format" value="12,1" />
+      </Group>
+    </Group>
+    <Group key="211970f3-a96b-4099-8de9-b267662d5124">
+      <Group key="0">
+        <Data key="Port Format" value="12,7" />
       </Group>
     </Group>
     <Group key="1425177d-0d0e-4468-8bcc-e638e5509a9b">

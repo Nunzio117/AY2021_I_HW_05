@@ -3,9 +3,9 @@
   #define __DEFINE_H
     
   //Define relativa all'indirizzo del dispositivo LIS3DH
-  #define LIS3DH_DEVICE_ADDRESS 0x18 /*0b001100x; x è un bit arbitrario che dipende dal pin SDO 
+  #define LIS3DH_DEVICE_ADDRESS 0x18 /*0b0001100x; x è un bit arbitrario che dipende dal pin SDO 
                                       e nel progetto in questione tale pin è connesso a GND e 
-                                      quindi x=0 --> 0b00011000 --> 0x18*/
+                                      quindi: x=0 --> 0b00011000 --> 0x18*/
     
   //Define relative agli indirizzi dei registri di LIS3DH usati per tale applicazione
   #define LIS3DH_CTRL_REG1_ADDRESS  0x20 

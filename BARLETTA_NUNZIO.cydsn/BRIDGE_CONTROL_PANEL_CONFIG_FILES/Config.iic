@@ -4,5 +4,5 @@
 ;@0AccZ @1AccZ @2AccZ @3AccZ --> Bytes relativi alla accelerazione Z (float)
 ;[t=C0] --> tail
 ;Bit rate: 38400 (>22400)--> fare riferimento a quanto detto nel top design
+;Range of Axis Y è stato impostato tra -20 e 20 siccome si è scelto un FS: +/-2*g
 RX8 [h=A0] @0AccX @1AccX @2AccX @3AccX @0AccY @1AccY @2AccY @3AccY @0AccZ @1AccZ @2AccZ @3AccZ [t=C0]
-

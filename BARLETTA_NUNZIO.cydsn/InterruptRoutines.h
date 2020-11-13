@@ -7,7 +7,6 @@
     #include "stdio.h"
     
     CY_ISR_PROTO(Custom_Button_ISR);
-    CY_ISR_PROTO(Custom_Timer_ISR);
     
     volatile uint8 flag; //Variabile usata per indicare l'avvenuta premuta del pulsante
     

@@ -12,7 +12,7 @@ int main(void)
     for(;;)
     {
         /*Esecuzione loop;
-        Funzione definita in "InitFunctions.h" ed esplicitata in "InitFunctions.c"*/
+        Funzione definita in "ExecutiveFunctions.h" ed esplicitata in "ExecutiveFunctions.c"*/
         Execution();
     }
 }
