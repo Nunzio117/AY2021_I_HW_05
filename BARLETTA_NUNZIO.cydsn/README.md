@@ -28,5 +28,5 @@ Si hanno le seguenti porte con i corrispettivi pin:
 Nei file di "Header" e di "Source" vi sono esplicitati già i dettagli reativi alle righe di codice presenti.
 
 
-## Bridge control panel confing
-Nei file di "Config.iic" e "Confing.ini" vi sono esplicitati già i dettagli reativi ai comandi presenti.
+## Bridge control panel config
+Nei file di "Config.iic" e "Config.ini" vi sono esplicitati già i dettagli reativi ai comandi presenti.
